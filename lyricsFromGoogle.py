@@ -12,23 +12,33 @@ for i in s:
 	else:
 		searchSong+=i
 searchSong+='+lyrics'
-searchPage = requests.get(searchSong)
 
-html = BeautifulSoup(searchPage.text, "html.parser")
 
-try:
-	playMusicTag=html.find("a", {"class":"fl"})
-	playMusicLink=playMusicTag.get('href')
-	lyricsPage=requests.get(playMusicLink)
-	playMusicHTML = BeautifulSoup(lyricsPage.text, "html.parser")
-	for i in playMusicHTML.find_all("br"):
-		i.replace_with('\n')
-	lyricsDiv=playMusicHTML.find("div", {"class":"content-container lyrics"})
-	lyricsPara=lyricsDiv.findChildren("p")
-	for i in lyricsPara:
-		print(i.text)
-except:
-	print("Couldn't get lyrics")
+
+headers_Get = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Accept-Encoding': 'gzip, deflate',
+        'DNT': '1',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1'
+    }
+
+
+
+searchPage = requests.get(searchSong, headers=headers_Get)
+html = BeautifulSoup(searchPage.text,'html.parser')
+lyrics=html.find_all("span", jsname="YS01Ge")
+if lyrics==[]:
+	print('Couldn\'t get lyrics')
+else:
+	for i in lyrics:
+		print(i.get_text())
+
+
+
+
 b = datetime.datetime.now()
 delta=b-a
 print('Time taken in millisecond: ',delta.total_seconds() * 1000)
